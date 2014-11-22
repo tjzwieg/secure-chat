@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 
 import com.elementzero.models.AccountInformation;
+import com.elementzero.services.AccountService;
 import com.elementzero.services.CryptoService;
 
 public class Messenger implements Runnable {
@@ -18,6 +19,8 @@ public class Messenger implements Runnable {
 			String password = getUserInput("Please enter your password: ");
 			
 			String passwordHash = CryptoService.getInstance().CreateHash(password);
+			
+			boolean success = AccountService.getInstance().LoadAccount("test", "test");
 			System.out.println(passwordHash);
 		} catch (IOException e) {
 			System.out.println("Unable to read your username or password.");
@@ -48,7 +51,7 @@ public class Messenger implements Runnable {
 		BufferedReader	keyboard;
 		String			response;
 		
-		if (!message.isEmpty())
+		if (message != null && !message.isEmpty())
 			System.out.print(message);
 		keyboard = new BufferedReader(new InputStreamReader(System.in));
 		response = keyboard.readLine();

@@ -7,6 +7,7 @@ public class Message {
 	private Long toId;
 	private Long fromId;
 	
+	@SuppressWarnings("unused")
 	private Message() {}
 	
 	public Message(Long mid, Object message, Long toId, Long fromId) {

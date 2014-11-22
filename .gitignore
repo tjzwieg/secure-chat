@@ -1,4 +1,8 @@
 /bin
+<<<<<<< Updated upstream
 /RemoteSystemsTempFiles
 /.metadata
 /libs/hibernate/documentation
+=======
+/target
+>>>>>>> Stashed changes
