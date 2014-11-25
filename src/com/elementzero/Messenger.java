@@ -1,32 +1,38 @@
 package com.elementzero;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 
 import com.elementzero.models.AccountInformation;
 import com.elementzero.services.AccountService;
 import com.elementzero.services.CryptoService;
 
-public class Messenger implements Runnable {
+public class Messenger extends BaseRunnable {
 
 	public AccountInformation currentAccount;
 	
 	public void run() {
 		try {
-			String username = getUserInput("Please enter your username: ");
-			String password = getUserInput("Please enter your password: ");
+			boolean validAccount = false;
+			do {
+				String username = getUserInput("Please enter your username: ");
+				String password = getUserInput("Please enter your password: ");
+				
+				String passwordHash = CryptoService.getInstance().CreateHash(password);
+				
+				// Validate account
+				//validAccount = AccountService.getInstance().ValidateAccount(username, passwordHash);
+				validAccount = true;
+			} while (!validAccount);
 			
-			String passwordHash = CryptoService.getInstance().CreateHash(password);
 			
-			boolean success = AccountService.getInstance().LoadAccount("test", "test");
-			System.out.println(passwordHash);
 		} catch (IOException e) {
 			System.out.println("Unable to read your username or password.");
 		} catch (NoSuchAlgorithmException e) {
 			System.out.println("Could not verify password.");
 		}
+		
+		currentAccount = AccountService.getInstance().LoadAccount("test", "test");
 		
 		while (true) {
 			try {
@@ -39,23 +45,5 @@ public class Messenger implements Runnable {
 				System.out.println("Could not get your message...");
 			}
 		}
-	}
-	
-	public static String getUserInput() throws IOException
-	{
-		return getUserInput(null);
-	}
-	
-	public static String getUserInput(String message) throws IOException
-	{
-		BufferedReader	keyboard;
-		String			response;
-		
-		if (message != null && !message.isEmpty())
-			System.out.print(message);
-		keyboard = new BufferedReader(new InputStreamReader(System.in));
-		response = keyboard.readLine();
-		
-		return response;
 	}
 }

@@ -3,6 +3,7 @@ package com.elementzero.services;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import com.elementzero.models.AccountInformation;
 import com.elementzero.models.LoginRequest;
 import com.elementzero.models.LoginResponse;
 
@@ -32,10 +33,21 @@ public class AccountService {
 		return loginResponse.validated;
 	}
 	
-	public boolean LoadAccount(String username, String password)
+	public AccountInformation LoadAccount(String username, String password)
 	{
-		String response = NetworkService.getInstance().Get("http://www.google.com");
+		//String response = NetworkService.getInstance().Get("http://www.google.com");
 		
-		return false;
+		AccountInformation acctInfo = new AccountInformation();
+		acctInfo.username = "abc123";
+		acctInfo.publicKey = "ABC8749387";
+		
+		return acctInfo;
+	}
+	
+	public boolean CreateAccount(String username, String password)
+	{
+		// Create account on server
+		
+		return true;
 	}
 }
