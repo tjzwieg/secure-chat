@@ -24,6 +24,26 @@ public class MessageService {
 		return instance;
 	}
 	
+	public MessageItem[] getConversation(String username, String passwordHash, String recipientUsername, String device) throws MalformedURLException, IOException
+	{
+		MessageRequest messageRequest = new MessageRequest();
+		messageRequest.action = "get_conversation_for_device";
+		messageRequest.username = username;
+		messageRequest.password = passwordHash;
+		messageRequest.fromDeviceId = device;
+		messageRequest.toUserName = recipientUsername;
+		messageRequest.toUserDevice = "";
+		messageRequest.message = "";
+		messageRequest.messageId = 0;
+		messageRequest.mac = "";
+		String messageRequestJson = SerializationService.getInstance().serializeToJson(messageRequest);
+		
+		String jsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "message.php", messageRequestJson);
+		MessageItem[] messages = SerializationService.getInstance().deserializeFromJson(jsonResponse, MessageItem[].class);
+		
+		return messages;
+	}
+	
 	public MessageItem[] getMessagesForUsername(String username, String passwordHash, String fromUsername, String device, int lastMessageId) throws MalformedURLException, IOException
 	{
 		MessageRequest messageRequest = new MessageRequest();
@@ -44,7 +64,7 @@ public class MessageService {
 		return messages;
 	}
 	
-	public boolean sendMessage(String fromUsername, String passwordHash, String fromDevice, String toUsername, String toDevice, String message, String mac) throws MalformedURLException, IOException
+	public boolean sendMessage(String fromUsername, String passwordHash, String fromDevice, String toUsername, String toDevice, String message, String mac, boolean selfMessage) throws MalformedURLException, IOException
 	{
 		MessageRequest messageRequest = new MessageRequest();
 		messageRequest.action = "send_message";
@@ -55,6 +75,7 @@ public class MessageService {
 		messageRequest.toUserDevice = toDevice;
 		messageRequest.message = message;
 		messageRequest.mac = mac;
+		messageRequest.selfMessage = (selfMessage ? 1 : 0);
 		String messageRequestJson = SerializationService.getInstance().serializeToJson(messageRequest);
 		
 		String jsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "message.php", messageRequestJson);

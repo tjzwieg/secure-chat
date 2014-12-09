@@ -49,20 +49,36 @@ public class ConversationUpdater extends Thread {
 						byte[] signedHash = Base64.decodeBase64(messageItem.mac);
 						
 						boolean verified = false;
-						for (MessageValidationKeyItem item : recipientAccount.verificationPublicKeyCollection)
+						if (messageItem.selfMessage == 1)
 						{
-							if (item.deviceId.equals(messageItem.fromDeviceId))
+							for (MessageValidationKeyItem item : currentAccount.verificationPublicKeyCollection)
 							{
-								PublicKey senderPublicKey = KeyCertService.getInstance().generatePublicKey(item.publicKey);
-								verified = CryptoService.getInstance().verify(messageHash, signedHash, senderPublicKey);
-								break;
+								if (item.deviceId.equals(messageItem.fromDeviceId))
+								{
+									PublicKey senderPublicKey = KeyCertService.getInstance().generatePublicKey(item.publicKey);
+									verified = CryptoService.getInstance().verify(messageHash, signedHash, senderPublicKey);
+									break;
+								}
+							}
+						}
+						else
+						{
+							for (MessageValidationKeyItem item : recipientAccount.verificationPublicKeyCollection)
+							{
+								if (item.deviceId.equals(messageItem.fromDeviceId))
+								{
+									PublicKey senderPublicKey = KeyCertService.getInstance().generatePublicKey(item.publicKey);
+									verified = CryptoService.getInstance().verify(messageHash, signedHash, senderPublicKey);
+									break;
+								}
 							}
 						}
 						
+						
 						if (!verified)
 							System.out.println("Unable to verify the message from device " + messageItem.fromDeviceId + "...It may be forged.");
-							
-						System.out.println(messageItem.messageDate.toString() + ": [" + recipientAccount.username + "] " + decryptedMessage);
+						
+						System.out.println(messageItem.messageDate.toString() + ": [" + (messageItem.selfMessage == 1 ? currentAccount.username : recipientAccount.username) + "] " + decryptedMessage);
 						
 						currentMessageCounter = messageItem.messageId;
 					}

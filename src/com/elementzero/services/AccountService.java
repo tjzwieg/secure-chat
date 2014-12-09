@@ -96,6 +96,7 @@ public class AccountService {
 		MessageValidationKeyItem[] verificationPublicKeys = SerializationService.getInstance().deserializeFromJson(verificationJsonResponse, MessageValidationKeyItem[].class);
 		
 		AccountInformation acctInfo = new AccountInformation();
+		acctInfo.userId = (msgPublicKeys.length > 0 ? msgPublicKeys[0].userId : 0);
 		acctInfo.username = username;
 		acctInfo.passwordHash = passwordHash;
 		acctInfo.currentDevice = KeyCertService.getInstance().getLocalDeviceName();
@@ -123,6 +124,7 @@ public class AccountService {
 		MessageValidationKeyItem[] verificationPublicKeys = SerializationService.getInstance().deserializeFromJson(verificationJsonResponse, MessageValidationKeyItem[].class);
 		
 		AccountInformation acctInfo = new AccountInformation();
+		acctInfo.userId = (msgPublicKeys.length > 0 ? msgPublicKeys[0].userId : 0);
 		acctInfo.username = otherUsername;
 		acctInfo.passwordHash = "default";
 		acctInfo.messagePublicKeyCollection = msgPublicKeys;

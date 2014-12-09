@@ -10,4 +10,5 @@ public class MessageRequest {
 	public String message;
 	public String mac;
 	public int messageId = 0;
+	public int selfMessage = 0;
 }
