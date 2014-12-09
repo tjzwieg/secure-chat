@@ -51,7 +51,7 @@ public class ConversationUpdater extends Thread {
 						boolean verified = false;
 						for (MessageValidationKeyItem item : recipientAccount.verificationPublicKeyCollection)
 						{
-							if (item.deviceId == messageItem.fromDeviceId)
+							if (item.deviceId.equals(messageItem.fromDeviceId))
 							{
 								PublicKey senderPublicKey = KeyCertService.getInstance().generatePublicKey(item.publicKey);
 								verified = CryptoService.getInstance().verify(messageHash, signedHash, senderPublicKey);
