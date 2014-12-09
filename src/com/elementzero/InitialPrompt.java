@@ -1,7 +1,10 @@
 package com.elementzero;
 
+import com.elementzero.models.AccountRequest;
 import com.elementzero.services.AccountService;
 import com.elementzero.services.CryptoService;
+import com.elementzero.services.NetworkService;
+import com.elementzero.services.SerializationService;
 
 public class InitialPrompt extends BaseRunnable {
 	public void run() {
@@ -18,7 +21,12 @@ public class InitialPrompt extends BaseRunnable {
 					newUsername = getUserInput("Please enter a username for your account: ");
 					
 					// Check username availability
-					usernameAvailable = true;
+					AccountRequest availCheck = new AccountRequest("check_new_existence", newUsername, "default");
+					availCheck.lookupUsername = newUsername;
+					String availJson = SerializationService.getInstance().serializeToJson(availCheck);
+					
+					String jsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "account.php", availJson);
+					usernameAvailable = (jsonResponse.equalsIgnoreCase("false"));
 					
 					if (!usernameAvailable) {
 						printMessage("Error: The username is not available.");

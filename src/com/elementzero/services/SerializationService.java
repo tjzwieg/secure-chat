@@ -1,6 +1,7 @@
 package com.elementzero.services;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class SerializationService {
 
@@ -9,7 +10,7 @@ public class SerializationService {
 	
 	private SerializationService()
 	{
-		serializer = new Gson();
+		serializer = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
 	}
 	
 	public static SerializationService getInstance()

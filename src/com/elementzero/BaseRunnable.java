@@ -21,7 +21,7 @@ public abstract class BaseRunnable implements Runnable {
 		keyboard = new BufferedReader(new InputStreamReader(System.in));
 		response = keyboard.readLine();
 		
-		return response;
+		return response.trim();
 	}
 	
 	public static void printMessage(String message) {

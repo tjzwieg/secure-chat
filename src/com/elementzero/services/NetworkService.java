@@ -17,6 +17,7 @@ import org.apache.http.impl.client.HttpClients;
 
 public class NetworkService {
 	private static NetworkService instance = null;
+	public static String BaseUrl = "http://elementzerosolutions.com/ez/services/";
 	
 	private NetworkService()
 	{
@@ -37,9 +38,7 @@ public class NetworkService {
 			
 			HttpClient client = HttpClients.createDefault();
 			HttpClientContext context = HttpClientContext.create();
-			client.execute(request, context);
-	
-	        HttpResponse response = client.execute(request);
+	        HttpResponse response = client.execute(request, context);
 	
 	        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 	        String json = "";
@@ -66,9 +65,7 @@ public class NetworkService {
 			
 			HttpClient client = HttpClients.createDefault();
 			HttpClientContext context = HttpClientContext.create();
-			client.execute(request, context);
-	
-	        HttpResponse response = client.execute(request);
+			HttpResponse response = client.execute(request, context);
 	
 	        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 	        String json = "";
