@@ -3,6 +3,7 @@ package com.elementzero.services;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyStoreException;
@@ -62,8 +63,23 @@ public class AccountService {
 		return jsonResponse.equalsIgnoreCase("true");
 	}
 	
-	public AccountInformation LoadLocalAccount(String username, String passwordHash) throws MalformedURLException, IOException
+	public AccountInformation LoadLocalAccount(String username, String passwordHash) throws MalformedURLException, IOException // throws MalformedURLException, IOException, UnrecoverableKeyException, InvalidKeyException, KeyStoreException, NoSuchAlgorithmException, CertificateException, NoSuchProviderException, SignatureException
 	{
+		try {
+			String localDeviceName = KeyCertService.getInstance().getLocalDeviceName();
+			
+			String msgCertAlias = String.format("%s_%s_msg", localDeviceName, username);
+			if (!KeyCertService.getInstance().doesKeyExist(msgCertAlias, passwordHash))
+				generateAndAddMessagePublicKey(username, passwordHash, localDeviceName);
+			
+			String validCertAlias = String.format("%s_%s_valid", localDeviceName, username);
+			if (!KeyCertService.getInstance().doesKeyExist(validCertAlias, passwordHash))
+				generateAndAddValidationPublicKey(username, passwordHash, localDeviceName);
+			
+		} catch (Exception e) {
+			// Do nothing
+		}
+		
 		MessageValidationKeyRequest msgPublicKeyRequest = new MessageValidationKeyRequest();
 		msgPublicKeyRequest.action = "get_keys_for_user";
 		msgPublicKeyRequest.username = username;
@@ -129,6 +145,15 @@ public class AccountService {
 		
 		String localDeviceName = KeyCertService.getInstance().getLocalDeviceName();
 		
+		generateAndAddMessagePublicKey(username, passwordHash, localDeviceName);
+		generateAndAddValidationPublicKey(username, passwordHash, localDeviceName);
+		
+		return true;
+	}
+	
+	private void generateAndAddMessagePublicKey(String username, String passwordHash, String localDeviceName) throws UnrecoverableKeyException, InvalidKeyException, 
+		KeyStoreException, NoSuchAlgorithmException, CertificateException, NoSuchProviderException, SignatureException, UnknownHostException, MalformedURLException, IOException
+	{
 		// Generate and add message public key
 		String msgCertAlias = String.format("%s_%s_msg", localDeviceName, username);
 		if (KeyCertService.getInstance().generateCertificate(msgCertAlias, passwordHash))
@@ -147,9 +172,12 @@ public class AccountService {
 			
 			String msgKeyRequestJson = SerializationService.getInstance().serializeToJson(msgKeyRequest);
 			String msgJsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "messagekey.php", msgKeyRequestJson);
-			
 		}
-		
+	}
+	
+	private void generateAndAddValidationPublicKey(String username, String passwordHash, String localDeviceName) throws UnrecoverableKeyException, InvalidKeyException, 
+		KeyStoreException, NoSuchAlgorithmException, CertificateException, NoSuchProviderException, SignatureException, UnknownHostException, MalformedURLException, IOException
+	{
 		// Generate and add validation public key
 		String validCertAlias = String.format("%s_%s_valid", localDeviceName, username);
 		if (KeyCertService.getInstance().generateCertificate(validCertAlias, passwordHash))
@@ -168,9 +196,6 @@ public class AccountService {
 			
 			String validKeyRequestJson = SerializationService.getInstance().serializeToJson(validKeyRequest);
 			String validJsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "verificationkey.php", validKeyRequestJson);
-			
 		}
-		
-		return true;
 	}
 }

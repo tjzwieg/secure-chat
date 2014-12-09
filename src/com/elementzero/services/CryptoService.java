@@ -5,6 +5,10 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -39,11 +43,11 @@ public class CryptoService {
 		//return new String(messageDigest.digest(), textEncoding);
 	}
 	
-	public byte[] encrypt(byte[] contents, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException
+	public byte[] encrypt(String contents, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException
 	{
 		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		cipher.init(Cipher.ENCRYPT_MODE, key);
-		return cipher.doFinal(contents);
+		return cipher.doFinal(contents.getBytes("UTF8"));
 	}
 	
 	public String decrypt(byte[] contents, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException
@@ -53,5 +57,20 @@ public class CryptoService {
 		return new String(cipher.doFinal(contents), "UTF8");
 	}
 	
+	public byte[] sign(String plaintext, PrivateKey key) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException
+	{
+		Signature sig = Signature.getInstance("SHA256WithRSA");
+		sig.initSign(key);
+		sig.update(plaintext.getBytes());
+		byte[] signature = sig.sign();
+		return signature;
+	}
 	
+	public boolean verify(String plaintext, byte[] expectedSignature, PublicKey key) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException
+	{
+		Signature sig = Signature.getInstance("SHA256WithRSA");
+		sig.initVerify(key);
+		sig.update(plaintext.getBytes());
+		return sig.verify(expectedSignature);
+	}
 }

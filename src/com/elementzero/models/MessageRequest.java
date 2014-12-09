@@ -8,5 +8,6 @@ public class MessageRequest {
 	public String toUserName;
 	public String toUserDevice;
 	public String message;
+	public String mac;
 	public int messageId = 0;
 }

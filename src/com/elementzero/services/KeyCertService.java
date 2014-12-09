@@ -59,15 +59,6 @@ public class KeyCertService {
 		try {
 			FileInputStream ip = new FileInputStream(trustedKeyStoreFileName);
 			ip.close();
-			
-//			KeyStore trustedKeyStore = getKeyStore(KeyStoreType.TRUSTED);
-//			
-//			Enumeration<String> trustedKeyAliases = trustedKeyStore.aliases();
-//			while (trustedKeyAliases.hasMoreElements())
-//			{
-//				String alias = trustedKeyAliases.nextElement();
-//				System.out.println("Trusted Alias: " + alias);
-//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,6 +87,17 @@ public class KeyCertService {
 			return new KeyPair(publicKey, (PrivateKey) key);
 		}
 		return null;
+	}
+	
+	public boolean doesKeyExist(String certAlias, String passwordHash) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException
+	{
+		KeyStore keystore = getKeyStore(KeyStoreType.LOCAL);
+		if (keystore.containsAlias(certAlias))
+		{
+			Key key = keystore.getKey(certAlias, passwordHash.toCharArray());
+			return (key instanceof PrivateKey);
+		}
+		return false;
 	}
 	
 	public PublicKey generatePublicKey(String base64PublicKey) throws NoSuchAlgorithmException, InvalidKeySpecException

@@ -10,4 +10,5 @@ public class MessageItem {
 	public int toUserId;
 	public String toDeviceId;
 	public String message;
+	public String mac;
 }

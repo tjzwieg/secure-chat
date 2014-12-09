@@ -35,6 +35,7 @@ public class MessageService {
 		messageRequest.toUserDevice = "";
 		messageRequest.message = "";
 		messageRequest.messageId = lastMessageId;
+		messageRequest.mac = "";
 		String messageRequestJson = SerializationService.getInstance().serializeToJson(messageRequest);
 		
 		String jsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "message.php", messageRequestJson);
@@ -43,7 +44,7 @@ public class MessageService {
 		return messages;
 	}
 	
-	public boolean sendMessage(String fromUsername, String passwordHash, String fromDevice, String toUsername, String toDevice, String message) throws MalformedURLException, IOException
+	public boolean sendMessage(String fromUsername, String passwordHash, String fromDevice, String toUsername, String toDevice, String message, String mac) throws MalformedURLException, IOException
 	{
 		MessageRequest messageRequest = new MessageRequest();
 		messageRequest.action = "send_message";
@@ -53,6 +54,7 @@ public class MessageService {
 		messageRequest.toUserName = toUsername;
 		messageRequest.toUserDevice = toDevice;
 		messageRequest.message = message;
+		messageRequest.mac = mac;
 		String messageRequestJson = SerializationService.getInstance().serializeToJson(messageRequest);
 		
 		String jsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "message.php", messageRequestJson);

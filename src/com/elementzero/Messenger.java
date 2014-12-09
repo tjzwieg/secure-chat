@@ -114,22 +114,16 @@ public class Messenger extends BaseRunnable {
 							KeyPair localAccountKeyPair = KeyCertService.getInstance().getKeyPair(certAlias, currentAccount.passwordHash);
 							
 							String messageHash = CryptoService.getInstance().CreateHash(message);
-							byte[] encryptedHash = CryptoService.getInstance().encrypt(messageHash.getBytes("UTF8"), localAccountKeyPair.getPrivate());
-							//String base64EncryptedHash = Base64.encodeBase64String(encryptedHash);
-							//byte[] finalMessage = message.getBytes("UTF8") + encryptedHash;
-							byte[] messageBytes = message.getBytes("UTF8");
-							byte[] combined = new byte[messageBytes.length + encryptedHash.length];
-							
-							System.arraycopy(messageBytes, 0, combined, 0, messageBytes.length);
-							System.arraycopy(encryptedHash, 0, combined, messageBytes.length, encryptedHash.length);
+							byte[] signedHash = CryptoService.getInstance().sign(messageHash, localAccountKeyPair.getPrivate());
+							String base64SignedHash = Base64.encodeBase64String(signedHash);
 							
 							for (MessageValidationKeyItem keyItem : recipientAccount.messagePublicKeyCollection) {
 								PublicKey recipientPublicKey = KeyCertService.getInstance().generatePublicKey(keyItem.publicKey);
-								byte[] encryptedFinalMessage = CryptoService.getInstance().encrypt(combined, recipientPublicKey);
-								String base64EncryptedFinalMessage = Base64.encodeBase64String(encryptedFinalMessage);
+								byte[] encryptedMessage = CryptoService.getInstance().encrypt(message, recipientPublicKey);
+								String base64EncryptedMessage = Base64.encodeBase64String(encryptedMessage);
 								
 								if (MessageService.getInstance().sendMessage(currentAccount.username, currentAccount.passwordHash, KeyCertService.getInstance().getLocalDeviceName(), 
-										recipientAccount.username, keyItem.deviceId, base64EncryptedFinalMessage))
+										recipientAccount.username, keyItem.deviceId, base64EncryptedMessage, base64SignedHash))
 								{
 									System.out.println(new Date().toString() + ": [" + currentAccount.username + "] " + message);
 								} else {

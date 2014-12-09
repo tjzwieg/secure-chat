@@ -42,13 +42,11 @@ public class ConversationUpdater extends Thread {
 					
 					int currentMessageCounter = 0;
 					for (MessageItem messageItem : messages) {
-						System.out.println(messageItem.message);
-						byte[] encryptedContents = Base64.decodeBase64(messageItem.message);
-						String decryptedMessageAndHash = CryptoService.getInstance().decrypt(encryptedContents, localAccountKeyPair.getPrivate());
-						byte[] decryptedMessageAndHashBytes = decryptedMessageAndHash.getBytes("UTF8");
-						int length = decryptedMessageAndHashBytes.length;
-						String message = decryptedMessageAndHash.substring(0, length - 256);
-						byte[] encryptedHash = decryptedMessageAndHash.substring(length - 256, length).getBytes();
+						byte[] encryptedMessage = Base64.decodeBase64(messageItem.message);
+						String decryptedMessage = CryptoService.getInstance().decrypt(encryptedMessage, localAccountKeyPair.getPrivate());
+						String messageHash = CryptoService.getInstance().CreateHash(decryptedMessage);
+						
+						byte[] signedHash = Base64.decodeBase64(messageItem.mac);
 						
 						boolean verified = false;
 						for (MessageValidationKeyItem item : recipientAccount.verificationPublicKeyCollection)
@@ -56,11 +54,7 @@ public class ConversationUpdater extends Thread {
 							if (item.deviceId == messageItem.fromDeviceId)
 							{
 								PublicKey senderPublicKey = KeyCertService.getInstance().generatePublicKey(item.publicKey);
-								String decryptedHash = CryptoService.getInstance().decrypt(encryptedHash, senderPublicKey);
-								
-								String compareToHash = CryptoService.getInstance().CreateHash(message);
-								verified = compareToHash.equals(decryptedHash);
-								
+								verified = CryptoService.getInstance().verify(messageHash, signedHash, senderPublicKey);
 								break;
 							}
 						}
@@ -68,7 +62,7 @@ public class ConversationUpdater extends Thread {
 						if (!verified)
 							System.out.println("Unable to verify the message from device " + messageItem.fromDeviceId + "...It may be forged.");
 							
-						System.out.println(messageItem.messageDate.toString() + ": [" + recipientAccount.username + "] " + message);
+						System.out.println(messageItem.messageDate.toString() + ": [" + recipientAccount.username + "] " + decryptedMessage);
 						
 						currentMessageCounter = messageItem.messageId;
 					}
