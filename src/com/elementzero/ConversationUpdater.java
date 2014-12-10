@@ -2,8 +2,6 @@ package com.elementzero;
 
 import java.security.KeyPair;
 import java.security.PublicKey;
-import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -33,7 +31,6 @@ public class ConversationUpdater extends Thread {
 			//System.out.println("Checking for messages...");
 			
 			try {
-				Thread.sleep(5000);
 				MessageItem[] messages = MessageService.getInstance().getMessagesForUsername(currentAccount.username, currentAccount.passwordHash, recipientAccount.username, currentAccount.currentDevice, lastMessageId);
 				if (messages != null && messages.length > 0)
 				{
@@ -84,6 +81,8 @@ public class ConversationUpdater extends Thread {
 					}
 					lastMessageId = currentMessageCounter;
 				}
+				
+				Thread.sleep(5000);
 			} catch (InterruptedException ie) {
 				return;
 			} catch (Exception e) {

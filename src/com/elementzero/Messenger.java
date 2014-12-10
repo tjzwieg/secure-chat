@@ -180,8 +180,8 @@ public class Messenger extends BaseRunnable {
 					
 					if (conversing) {
 						try {
-							String msgCertAlias = KeyCertService.getInstance().generateMessageKeyCertAlias(currentAccount.username);
-							KeyPair msgLocalAccountKeyPair = KeyCertService.getInstance().getKeyPair(msgCertAlias, currentAccount.passwordHash);
+//							String msgCertAlias = KeyCertService.getInstance().generateMessageKeyCertAlias(currentAccount.username);
+//							KeyPair msgLocalAccountKeyPair = KeyCertService.getInstance().getKeyPair(msgCertAlias, currentAccount.passwordHash);
 							
 							String verificationCertAlias = KeyCertService.getInstance().generateVerificationKeyCertAlias(currentAccount.username);
 							KeyPair verificationLocalAccountKeyPair = KeyCertService.getInstance().getKeyPair(verificationCertAlias, currentAccount.passwordHash);
@@ -205,7 +205,8 @@ public class Messenger extends BaseRunnable {
 							
 							// Individually encrypt the message for each of my devices
 							for (MessageValidationKeyItem keyItem : currentAccount.messagePublicKeyCollection) {
-								byte[] encryptedMessage = CryptoService.getInstance().encrypt(message, msgLocalAccountKeyPair.getPublic());
+								PublicKey recipientPublicKey = KeyCertService.getInstance().generatePublicKey(keyItem.publicKey);
+								byte[] encryptedMessage = CryptoService.getInstance().encrypt(message, recipientPublicKey);
 								String base64EncryptedMessage = Base64.encodeBase64String(encryptedMessage);
 								
 								if (!MessageService.getInstance().sendMessage(currentAccount.username, currentAccount.passwordHash, KeyCertService.getInstance().getLocalDeviceName(), 
