@@ -1,7 +1,6 @@
 package com.elementzero.services;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.security.InvalidKeyException;
@@ -173,7 +172,7 @@ public class AccountService {
 			msgKeyRequest.username2 = username;
 			
 			String msgKeyRequestJson = SerializationService.getInstance().serializeToJson(msgKeyRequest);
-			String msgJsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "messagekey.php", msgKeyRequestJson);
+			NetworkService.getInstance().Post(NetworkService.BaseUrl + "messagekey.php", msgKeyRequestJson);
 		}
 	}
 	
@@ -197,7 +196,7 @@ public class AccountService {
 			validKeyRequest.username2 = username;
 			
 			String validKeyRequestJson = SerializationService.getInstance().serializeToJson(validKeyRequest);
-			String validJsonResponse = NetworkService.getInstance().Post(NetworkService.BaseUrl + "verificationkey.php", validKeyRequestJson);
+			NetworkService.getInstance().Post(NetworkService.BaseUrl + "verificationkey.php", validKeyRequestJson);
 		}
 	}
 }

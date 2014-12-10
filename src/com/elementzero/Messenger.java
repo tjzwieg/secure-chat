@@ -1,20 +1,13 @@
 package com.elementzero;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.security.KeyPair;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
-import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
 import com.elementzero.models.AccountInformation;
-import com.elementzero.models.MessageItem;
 import com.elementzero.models.MessageValidationKeyItem;
 import com.elementzero.services.AccountService;
 import com.elementzero.services.CryptoService;
@@ -66,8 +59,7 @@ public class Messenger extends BaseRunnable {
 			String validatedUsername = null;
 			do {
 				try {
-					String username = getUserInput("Please enter a username to start a new chat: ");
-					//getUserInput("Please enter a username to start a new chat or view an existing conversation: ");
+					String username = getUserInput("Please enter a username to start a new chat or view an existing conversation: ");
 					
 					if (username != null && !username.trim().isEmpty()) {
 						if (AccountService.getInstance().ValidateAccount(currentAccount.username, currentAccount.passwordHash, username.trim())) {
@@ -93,80 +85,7 @@ public class Messenger extends BaseRunnable {
 			
 			System.out.println("Connected to " + validatedUsername + ".\n-------------------------------------\n\n");
 			
-			int lastMessageId = 0;
-//			MessageItem[] messages;
-//			try {
-//				messages = MessageService.getInstance().getConversation(currentAccount.username, currentAccount.passwordHash, recipientAccount.username, currentAccount.currentDevice);
-//				if (messages != null && messages.length > 0)
-//				{
-//					String msgCertAlias = KeyCertService.getInstance().generateMessageKeyCertAlias(currentAccount.username);
-//					KeyPair msgLocalAccountKeyPair = KeyCertService.getInstance().getKeyPair(msgCertAlias, currentAccount.passwordHash);
-//					
-//					String verificationCertAlias = KeyCertService.getInstance().generateVerificationKeyCertAlias(currentAccount.username);
-//					KeyPair verificationLocalAccountKeyPair = KeyCertService.getInstance().getKeyPair(msgCertAlias, currentAccount.passwordHash);
-//					
-//					for (MessageItem message : messages) {
-//						if (message.toUserId == currentAccount.userId)
-//						{
-//							// This is a message we sent to the other user
-//							byte[] encryptedMessage = Base64.decodeBase64(message.message);
-//							String decryptedMessage = CryptoService.getInstance().decrypt(encryptedMessage, msgLocalAccountKeyPair.getPrivate());
-//							String messageHash = CryptoService.getInstance().CreateHash(decryptedMessage);
-//							
-//							byte[] signedHash = Base64.decodeBase64(message.mac);
-//							
-//							boolean verified = false;
-//							for (MessageValidationKeyItem item : recipientAccount.verificationPublicKeyCollection)
-//							{
-//								if (item.deviceId.equals(message.fromDeviceId))
-//								{
-//									PublicKey senderPublicKey = KeyCertService.getInstance().generatePublicKey(item.publicKey);
-//									verified = CryptoService.getInstance().verify(messageHash, signedHash, senderPublicKey);
-//									break;
-//								}
-//							}
-//							
-//							if (!verified)
-//								System.out.println("Unable to verify the message from device " + message.fromDeviceId + "...It may be forged.");
-//								
-//							System.out.println(message.messageDate.toString() + ": [" + recipientAccount.username + "] " + decryptedMessage);
-//						}
-//						else if (message.toUserId == recipientAccount.userId)
-//						{
-//							// This is a message sent to us by the other user
-//							byte[] encryptedMessage = Base64.decodeBase64(message.message);
-//							String decryptedMessage = CryptoService.getInstance().decrypt(encryptedMessage, msgLocalAccountKeyPair.getPrivate());
-//							String messageHash = CryptoService.getInstance().CreateHash(decryptedMessage);
-//							
-//							byte[] signedHash = Base64.decodeBase64(message.mac);
-//							
-//							boolean verified = false;
-//							for (MessageValidationKeyItem item : recipientAccount.verificationPublicKeyCollection)
-//							{
-//								if (item.deviceId.equals(message.fromDeviceId))
-//								{
-//									PublicKey senderPublicKey = KeyCertService.getInstance().generatePublicKey(item.publicKey);
-//									verified = CryptoService.getInstance().verify(messageHash, signedHash, senderPublicKey);
-//									break;
-//								}
-//							}
-//							
-//							if (!verified)
-//								System.out.println("Unable to verify the message from device " + message.fromDeviceId + "...It may be forged.");
-//								
-//							System.out.println(message.messageDate.toString() + ": [" + recipientAccount.username + "] " + decryptedMessage);
-//						}
-//						
-//						System.out.println(message.messageId);
-//						lastMessageId = message.messageId;
-//					}
-//				}
-//				
-//			} catch (Exception e) {
-//				// Couldn't pull the conversation, oh well...
-//			}
-			
-			ConversationUpdater convUpdaterThread = new ConversationUpdater(currentAccount, recipientAccount, lastMessageId);
+			ConversationUpdater convUpdaterThread = new ConversationUpdater(currentAccount, recipientAccount, 0);
 			convUpdaterThread.start();
 			
 			boolean conversing = true;
@@ -180,9 +99,6 @@ public class Messenger extends BaseRunnable {
 					
 					if (conversing) {
 						try {
-//							String msgCertAlias = KeyCertService.getInstance().generateMessageKeyCertAlias(currentAccount.username);
-//							KeyPair msgLocalAccountKeyPair = KeyCertService.getInstance().getKeyPair(msgCertAlias, currentAccount.passwordHash);
-							
 							String verificationCertAlias = KeyCertService.getInstance().generateVerificationKeyCertAlias(currentAccount.username);
 							KeyPair verificationLocalAccountKeyPair = KeyCertService.getInstance().getKeyPair(verificationCertAlias, currentAccount.passwordHash);
 							
@@ -215,8 +131,6 @@ public class Messenger extends BaseRunnable {
 									System.out.println("Unable to send the message to device " + keyItem.deviceId + "...Please try again later.");
 								}
 							}
-							
-							//System.out.println(new Date().toString() + ": [" + currentAccount.username + "] " + message);
 						} catch (Exception e) {
 							System.out.println("Unable to send the message...Please try again later.");
 						}

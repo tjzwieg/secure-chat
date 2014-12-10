@@ -146,28 +146,6 @@ public class KeyCertService {
         keyStore.setKeyEntry(certAlias, privKey, certPassword.toCharArray(), chain);
         setKeyStore(keyStore, KeyStoreType.LOCAL);
 	    
-//	    PrivateKey privateKey = (PrivateKey) keyStore.getKey(certAlias, certPassword.toCharArray());
-//	    Certificate localCert = keyStore.getCertificate(certAlias);
-//	    X509CertImpl localCertImpl = new X509CertImpl(localCert.getEncoded());
-//	    X509CertInfo localCertInfo = (X509CertInfo) localCertImpl.get(X509CertImpl.NAME + "." + X509CertImpl.INFO);
-//	    
-//	    Date firstDate = new Date();
-//	    Date lastDate = new Date(firstDate.getTime() + 365 * 24 * 60 * 60 * 1000L);
-//	    CertificateValidity interval = new CertificateValidity(firstDate, lastDate);
-//	    AlgorithmId algorithm = new AlgorithmId(AlgorithmId.sha256WithRSAEncryption_oid);
-//
-//	    localCertInfo.set(X509CertInfo.VALIDITY, interval);
-//	    localCertInfo.set(X509CertInfo.SERIAL_NUMBER, new CertificateSerialNumber((int) (firstDate.getTime() / 1000)));
-//	    localCertInfo.set(X509CertInfo.ISSUER + "." + CertificateSubjectName.DN_NAME, issuer);
-//	    localCertInfo.set(CertificateAlgorithmId.NAME + "." + CertificateAlgorithmId.ALGORITHM, algorithm);
-//	    
-//	    X509CertImpl signedCert = new X509CertImpl(localCertInfo);
-//	    signedCert.sign(certAuthPK, "SHA256withRSA");
-//	    
-//	    keyStore.setKeyEntry(certAlias, privateKey, certPassword.toCharArray(), new java.security.cert.Certificate[] { signedCert });
-//
-//	    setKeyStore(keyStore, KeyStoreType.LOCAL);
-	    
 	    return true;
 	}
 	
@@ -213,15 +191,6 @@ public class KeyCertService {
 		try {
 			FileInputStream ip = new FileInputStream(keystoreFileName);
 			ip.close();
-			
-//					KeyStore keyStore = getKeyStore(KeyStoreType.LOCAL);
-//					
-//					Enumeration<String> keyAliases = keyStore.aliases();
-//					while (keyAliases.hasMoreElements())
-//					{
-//						String alias = keyAliases.nextElement();
-//						System.out.println("Local Alias: " + alias);
-//					}
 		} catch (FileNotFoundException e) {
 			try {
 				setKeyStore(getKeyStore(KeyStoreType.NewLOCAL), KeyStoreType.LOCAL);
@@ -268,14 +237,14 @@ public class KeyCertService {
 		
 		switch (type)
 		{
-		case LOCAL:
-			filename = keystoreFileName;
-			password = keystorePassword;
-			break;
-		case TRUSTED:
-			filename = trustedKeyStoreFileName;
-			password = trustedKeyStorePassword;
-			break;
+			case LOCAL:
+				filename = keystoreFileName;
+				password = keystorePassword;
+				break;
+			case TRUSTED:
+				filename = trustedKeyStoreFileName;
+				password = trustedKeyStorePassword;
+				break;
 		}
 		
 		FileOutputStream output = new FileOutputStream(filename);

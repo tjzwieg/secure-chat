@@ -28,8 +28,6 @@ public class ConversationUpdater extends Thread {
 	public void run() {
 		while (!Thread.interrupted())
 		{
-			//System.out.println("Checking for messages...");
-			
 			try {
 				MessageItem[] messages = MessageService.getInstance().getMessagesForUsername(currentAccount.username, currentAccount.passwordHash, recipientAccount.username, currentAccount.currentDevice, lastMessageId);
 				if (messages != null && messages.length > 0)

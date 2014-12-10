@@ -2,8 +2,6 @@ package com.elementzero.services;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.elementzero.models.MessageItem;
 import com.elementzero.models.MessageRequest;

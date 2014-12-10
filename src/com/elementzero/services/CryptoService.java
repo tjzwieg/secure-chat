@@ -16,7 +16,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.crypto.util.PublicKeyFactory;
 
 public class CryptoService {
 
@@ -40,7 +39,6 @@ public class CryptoService {
 		MessageDigest messageDigest = MessageDigest.getInstance(hashAlgorithm);
 		messageDigest.update(text.getBytes(textEncoding));
 		return Base64.encodeBase64String(messageDigest.digest());
-		//return new String(messageDigest.digest(), textEncoding);
 	}
 	
 	public byte[] encrypt(String contents, Key key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException
